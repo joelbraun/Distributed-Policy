@@ -1,0 +1,58 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: policytest-deployment
+  labels:
+    app: policytest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: policytest
+  template:
+    metadata:
+      labels:
+        app: policytest
+    spec:
+      containers:
+      - name: opa
+        image: openpolicyagent/opa:0.10.5
+        ports:
+        - containerPort: 8181
+        args:
+        - "run"
+        - "/policy/bundle.tar.gz"
+        - "--ignore=.*"  # exclude hidden dirs created by Kubernetes
+        - "--server"
+        - "--log-level=debug"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: "policybundle"
+          mountPath: "/policy/bundle.tar.gz"
+          subPath: "bundle.tar.gz"
+      - name: apiserver
+        image: openpolicyagent/demo-restful-api:0.2
+        ports:
+        - containerPort: 5000
+        env:
+        - name: OPA_ADDR
+          value: http://opa:8181
+        - name: POLICY_PATH
+          value: /v1/data/httpapi/authz
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      volumes:
+      - name: "policybundle"
+        secret:
+          secretName: "policybundle"
