@@ -9,7 +9,7 @@ using static DataService.Rpc.PolicyData;
 
 namespace client.Services
 {
-    public interface IPolicyService 
+    public interface IPolicyDataService 
     {
         List<string> GetPermissions(string id);
 
