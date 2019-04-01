@@ -36,15 +36,31 @@ spec:
         - name: "policybundle"
           mountPath: "/policy/bundle.tar.gz"
           subPath: "bundle.tar.gz"
-      - name: apiserver
-        image: openpolicyagent/demo-restful-api:0.2
+      - name: policydataservice
+        image: policydataservice:latest
+        imagePullPolicy: Never
         ports:
-        - containerPort: 5000
-        env:
-        - name: OPA_ADDR
-          value: http://opa:8181
-        - name: POLICY_PATH
-          value: /v1/data/httpapi/authz
+        - containerPort: 3000
+        readinessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:3000"]
+          initialDelaySeconds: 5
+        livenessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:3000"]
+          initialDelaySeconds: 10
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      - name: policyclient
+        image: policyclient:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
         resources:
           requests:
             memory: "64Mi"

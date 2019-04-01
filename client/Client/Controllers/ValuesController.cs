@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using client.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +12,20 @@ namespace client.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly IPolicyService _policyService;
+
+        public ValuesController(IPolicyService policyService) {
+            _policyService = policyService;
+        }
+
         // GET api/values
         [HttpGet]
-        [Authorize(Policy = "Salary")]
+        //[Authorize(Policy = "Salary")]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var permissions = _policyService.GetRoles("app/identifier/alice");
+
+            return permissions;
         }
     }
 }

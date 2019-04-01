@@ -2,6 +2,7 @@
 using Grpc.Core;
 using Grpc.Health.V1;
 using static Grpc.Health.V1.Health;
+using static Grpc.Health.V1.HealthCheckResponse.Types;
 
 namespace DataService
 {
@@ -9,12 +10,17 @@ namespace DataService
     {
         public override Task<HealthCheckResponse> Check(HealthCheckRequest request, ServerCallContext context)
         {
-            return base.Check(request, context);
+            return Task.FromResult(new HealthCheckResponse {
+                Status = ServingStatus.Serving
+            });
         }
 
         public override Task Watch(HealthCheckRequest request, IServerStreamWriter<HealthCheckResponse> responseStream, ServerCallContext context)
         {
-            return base.Watch(request, responseStream, context);
+            responseStream.WriteAsync(new HealthCheckResponse {
+                Status = ServingStatus.Serving
+            });
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using client.Auth;
+using client.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +48,8 @@ namespace client
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
+
+            services.AddSingleton<IPolicyService, PolicyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
