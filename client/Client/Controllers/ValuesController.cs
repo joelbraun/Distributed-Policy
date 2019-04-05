@@ -12,15 +12,15 @@ namespace client.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private readonly IPolicyService _policyService;
+        private readonly IPolicyDataService _policyService;
 
-        public ValuesController(IPolicyService policyService) {
+        public ValuesController(IPolicyDataService policyService) {
             _policyService = policyService;
         }
 
         // GET api/values
         [HttpGet]
-        //[Authorize(Policy = "Salary")]
+        [Authorize(Policy = "Salary")]
         public ActionResult<IEnumerable<string>> Get()
         {
             var permissions = _policyService.GetRoles("app/identifier/alice");

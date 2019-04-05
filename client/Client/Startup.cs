@@ -33,8 +33,8 @@ namespace client
 
             services.AddAuthentication()
                 .AddJwtBearer(options => {
-                    options.Audience = "http://localhost:5001/";
-                    options.Authority = "http://localhost:5000/";
+                    options.Audience = "api";
+                    options.Authority = "https://demo.identityserver.io";
                 });
 
             services.AddAuthorization(options =>
@@ -49,7 +49,9 @@ namespace client
 
             services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
 
-            services.AddSingleton<IPolicyService, PolicyService>();
+            services.AddSingleton<IPolicyDataService, PolicyDataService>();
+
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

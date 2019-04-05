@@ -9,7 +9,7 @@ using static DataService.Rpc.PolicyData;
 
 namespace client.Services
 {
-    public class PolicyService : IPolicyService
+    public class PolicyDataService : IPolicyDataService
     {
         private static PolicyDataClient _policyDataClient = new PolicyDataClient(new Grpc.Core.Channel("localhost:3000", ChannelCredentials.Insecure));
 

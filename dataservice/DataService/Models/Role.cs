@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DataService.Models
 {
@@ -13,6 +15,14 @@ namespace DataService.Models
     /// </summary>
     public class Role
     {
+        public Role() 
+        {
+            Id = ObjectId.GenerateNewId().ToString();
+        }
+
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        
         /// <summary>
         /// Gets the name.
         /// </summary>

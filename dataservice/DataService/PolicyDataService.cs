@@ -23,7 +23,7 @@ namespace DataService
 
         public override Task<PermissionsResponse> GetPermissions(UserRequest request, ServerCallContext context)
         {
-            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.Id == request.Id).FirstOrDefault();
+            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
             if (user == null) 
             {
                 return Task.FromResult(new PermissionsResponse());
@@ -38,7 +38,7 @@ namespace DataService
 
         public override Task<RolesResponse> GetRoles(UserRequest request, ServerCallContext context)
         {
-            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.Id == request.Id).FirstOrDefault();
+            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
             if (user == null) 
             {
                 return Task.FromResult(new RolesResponse());
@@ -54,7 +54,7 @@ namespace DataService
         public override Task<HasPermissionsResponse> HasPermissions(HasPermissionsRequest request, ServerCallContext context)
         {
             var requestedPermissions = request.Permissions.ToList();
-            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.Id == request.Id).FirstOrDefault();
+            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
             if (user == null) {
                 return Task.FromResult(new HasPermissionsResponse { Result = false });
             }
@@ -70,7 +70,7 @@ namespace DataService
         public override Task<HasRolesResponse> HasRoles(HasRolesRequest request, ServerCallContext context)
         {
             var requestedRoles = request.Roles.ToList();
-            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.Id == request.Id).FirstOrDefault();
+            var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
             if (user == null) {
                 return Task.FromResult(new HasRolesResponse { Result = false });
             }
@@ -86,24 +86,24 @@ namespace DataService
         private void Populate(){
             try {
             _database.GetCollection<User>("Users").InsertOne(new User {
-                Id = "app/identifier/alice",
+                QualifiedName = "app/identifier/alice",
                 Roles = new List<string> {
                     "admin"
                 }
             });
             }
             catch (Exception e) {
-
+                Console.WriteLine(e.ToString());
             }
 
             try {
                 _database.GetCollection<Role>("Roles").InsertOne(new Role {
                 Name = "admin",
-                Permissions = new List<string> {"doThing"}
+                Permissions = new List<string> {"viewSalary"}
             });
             }
             catch (Exception e) {
-
+                Console.WriteLine(e.ToString());
             }
         }
     }
