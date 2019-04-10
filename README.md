@@ -1,6 +1,6 @@
 ## Overview
 
-This repository is an attempt at writing a fully distributed service agent for use in a k8s environment. Policy takes many forms in microservice-based systems, and this particular implementation is designed to be functional across equally many scenarios.
+This repository is an attempt at writing a fully distributed policy service for use in a k8s environment. Policy takes many forms in microservice-based systems, and this particular implementation is designed to be functional across almost all scenarios.
 
 There are two system designs through which policy are usually approached, RBAC and ABAC. RBAC, or Role-Based Access Control, makes authorization decisions based on a user's roles and corresponding permissions. This satisfies a significant number of use cases, and can reasonably handle most policy situations.
 
@@ -82,3 +82,8 @@ The PIP sidecar in this implementation communicates with the .NET app over gRPC.
 [This Wikipedia article](https://en.wikipedia.org/wiki/Attribute-based_access_control) I stole my explanation of ABAC from.
 
 [This wonderful talk](https://www.youtube.com/watch?v=R6tUNpRpdnY) from Netflix where they've implemented someting similar.
+
+## Running It
+
+1. Run `deploySample.sh` in `kube` to deploy to a local minikube cluster.
+2. Run `makeRequest.py` to make a sample request to the client application.

@@ -23,9 +23,13 @@ namespace client.Controllers
         [Authorize(Policy = "Salary")]
         public ActionResult<IEnumerable<string>> Get()
         {
-            var permissions = _policyService.GetRoles("app/identifier/alice");
+            // another example of using the data service
+            var roles = _policyService.GetRoles("app/identifier/client");
 
-            return permissions;
+            return new JsonResult(new {
+                status = "Authorized",
+                roles
+            });
         }
     }
 }

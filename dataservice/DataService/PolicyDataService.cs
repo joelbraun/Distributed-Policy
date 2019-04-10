@@ -16,11 +16,13 @@ namespace DataService
     {
         private IMongoDatabase _database;
         public PolicyDataService() {
+            // build mongo client, get the policy database
             _database = new MongoClient("mongodb://mongo:27017").GetDatabase("policy");
 
             Populate();
         }
 
+        // Get all permissions from all roles assigned to the user of an app.
         public override Task<PermissionsResponse> GetPermissions(UserRequest request, ServerCallContext context)
         {
             var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
@@ -36,6 +38,7 @@ namespace DataService
             return Task.FromResult(response);
         }
 
+        // Get all roles assigned to the user of an app.
         public override Task<RolesResponse> GetRoles(UserRequest request, ServerCallContext context)
         {
             var user = _database.GetCollection<User>("Users").AsQueryable().Where(x => x.QualifiedName == request.Id).FirstOrDefault();
@@ -51,6 +54,7 @@ namespace DataService
             return Task.FromResult(response);
         }
 
+        // Check if a user has a specific permission.
         public override Task<HasPermissionsResponse> HasPermissions(HasPermissionsRequest request, ServerCallContext context)
         {
             var requestedPermissions = request.Permissions.ToList();
@@ -67,6 +71,7 @@ namespace DataService
             });
         }
 
+        // Check if a user has a specific role.
         public override Task<HasRolesResponse> HasRoles(HasRolesRequest request, ServerCallContext context)
         {
             var requestedRoles = request.Roles.ToList();
@@ -83,10 +88,11 @@ namespace DataService
             });
         }
 
+        // This method populates some policy data that we can query for in the client applicaiton.
         private void Populate(){
             try {
             _database.GetCollection<User>("Users").InsertOne(new User {
-                QualifiedName = "app/identifier/alice",
+                QualifiedName = "app/identifier/client",
                 Roles = new List<string> {
                     "admin"
                 }
