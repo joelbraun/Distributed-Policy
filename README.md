@@ -16,7 +16,7 @@ It's not uncommon, though not required, to see the PDP reach directly out to PIP
 
 ## Project Architecture
 
-[Solution Design](https://github.com/joelbraun/Distributed-Policy/raw/master/doc/arch.png)
+![Solution Design](https://github.com/joelbraun/Distributed-Policy/raw/master/doc/arch.png)
 
 ### Policy Decision Point
 
