@@ -23,9 +23,6 @@ namespace DataService
             while (true) {
 
             }
-
-            Console.WriteLine("Greeter server listening on port 3000");
-            Console.WriteLine("Press any key to stop the server...");
         }
     }
 }
