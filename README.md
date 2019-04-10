@@ -9,12 +9,14 @@ ABAC, or Attribute-Based Access Control, is both more flexible and offers finer 
 ABAC architectures usually contain several components:
 
 - **Policy Enforcement Point (PEP):** The client responsible for governing access to data ABAC has been applied to. Generates an authorization request and then sends it to the PDP.
-- **Policy Decision Point (PDP):** Evaluates incoming requests against policies, and provides an allow/deny decision.
+- **Policy Decision Point (PDP):** Evaluates incoming requests against policy rules, and provides an allow/deny decision.
 - **Policy Information Point (PIP):** Provides data necessary to evaluate policies (e.g. a database, LDAP, or Active Directory).  
 
 It's not uncommon, though not required, to see the PDP reach directly out to PIPs to gather information necessary to generate an authorization decision. This project introduces a small twist on this.
 
 ## Project Architecture
+
+[Solution Design](https://github.com/joelbraun/Distributed-Policy/raw/master/doc/arch.png)
 
 ### Policy Decision Point
 
@@ -29,10 +31,10 @@ At present, OPA only offers simple support for reaching out directly to PIPs for
 
 Since OPA solves the difficult part (writing a good rules engine) for us, the real problem to solve is how to get it decision data. There are a few key considerations in propogating highly-distributed policy data:
 
-- A centralized policy data service provides a single point of failure for all your applications. If the system is down, all of your apps will lack the data necessary to make authorization decisions. There are ways around this, like shared caches, putting policy data in your authentication ticket, etc. but these don't really work for all scenarios (lots of permissions? lots of roles? lots of users with different roles?).
+- A centralized policy data service provides a single point of failure for all your applications. If the system is down, all of your apps will lack the data necessary to make authorization decisions. There are ways around this, like shared caches, putting policy data in your authentication ticket, etc. but these don't really work for all scenarios (lots of permissions? lots of roles? lots of apps with different roles?).
 - Any non-caching solution must consider round-trip-time to gather data. HTTP calls to a different service incur significant cost, especially if these calls must occur on every processed request.
 
-Similar to OPA's sidecar architecture, I have implemented a PIP sidecar. This is also deployed alongside client application containers on the same node, to keep round-trip-time low. This has the added benefit of ensuring applications are not dependent on a single service, but rather are only dependent on their deployed sidecar. This sidecar then pulls from a high-speed, high-availability datastore with sufficient read replication to scale effectively. Your only limitation is the database.
+Similar to OPA's sidecar architecture, I have implemented a PIP sidecar. This is also deployed alongside client application containers on the same node, to keep call round-trip-time low. This has the added benefit of ensuring applications are not dependent on a single service, but rather are only dependent on their deployed sidecar. This sidecar then pulls from a high-speed, high-availability datastore with sufficient read replication to scale effectively. Your only limitation is the database.
 
 Because each app is deployed with data sidecars, these sidecars can also be tuned for different scenarios. Low number of users, high policy complexity? Cache this app's permission _per user_. High number of users, simple policy? Cache _per role_. Cache in-memory. Have an app with a shared cache if you want. It doesn't matter, because each app has its own sidecar and data access is **isolated**.
 
@@ -48,7 +50,7 @@ Of course, all this is just .NET Core/MVC syntactic sugar, and similar construct
 
 #### RBAC vs ABAC, and the Pareto Principle
 
-Realistically, 20% of the functionality will get you 80% of the way with policy. Most applications can authorize based on simple RBAC alone, and for those, we need not involve the OPA sidecar at all. A simple query to the dataservice "Does this user have this role?" or "Does this user have this permission?" is enough to handle the decision right there in the app.
+Realistically, 20% of the functionality will get you 80% of the way with policy. Most applications can authorize requests based on simple RBAC roles alone, and for those, we need not involve the OPA sidecar at all. A simple query to the dataservice "Does this user have this role?" or "Does this user have this permission?" is enough to handle the decision right there in the app.
 
 ## Project Map
 
